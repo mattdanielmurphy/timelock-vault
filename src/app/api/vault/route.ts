@@ -6,7 +6,7 @@ const redis = new Redis({
     token: process.env.UPSTASH_REDIS_REST_TOKEN!,
 })
 
-const IS_TEST_MODE = false
+const IS_TEST_MODE = true
 const TIMEOUT_DURATION = IS_TEST_MODE ? 60 * 1000 : 24 * 60 * 60 * 1000
 
 // Simple internal helper to validate the secret query token
