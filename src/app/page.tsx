@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback, Suspense } from 'react'
 
 import { useSearchParams } from 'next/navigation'
 
-export default function VaultDashboard() {
+function VaultDashboardContent() {
     const searchParams = useSearchParams()
     const token = searchParams.get('token') || ''
 
@@ -14,7 +14,7 @@ export default function VaultDashboard() {
     const [loading, setLoading] = useState(true)
 
     // Fetch current vault state on load
-    const checkVault = async () => {
+    const checkVault = useCallback(async () => {
         try {
             setLoading(true)
             const res = await fetch(`/api/vault?token=${token}`)
@@ -28,11 +28,11 @@ export default function VaultDashboard() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [token])
 
     useEffect(() => {
         checkVault()
-    }, [token])
+    }, [checkVault])
 
     // Handle setting a new passcode
     const handleUpdatePasscode = async (e: React.FormEvent) => {
@@ -251,5 +251,17 @@ export default function VaultDashboard() {
                 </button>
             </form>
         </div>
+    )
+}
+
+export default function VaultDashboard() {
+    return (
+        <Suspense fallback={
+            <div style={{ padding: '40px', fontFamily: 'sans-serif', textAlign: 'center' }}>
+                <p>Loading secure dashboard...</p>
+            </div>
+        }>
+            <VaultDashboardContent />
+        </Suspense>
     )
 }
